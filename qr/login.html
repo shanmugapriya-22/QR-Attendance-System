@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .container h1 {
+           
+
+    color:  #ff4500; /* Pastel orange */
+    margin-bottom: 20px;
+
+        }
+        .container label {
+            display: block;
+            text-align: left;
+            margin: 10px 0 5px;
+            color: #555;
+        }
+        .container input, .container select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .container button {
+    background-color: #ff4500; /* Pastel orange */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    width:99%;
+   
+    font-size: 1em;
+    margin: 20px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+           
+        .container button:hover {
+    background-color:#FFA07A ; /* Darker pastel orange */
+    transform: scale(1.05);
+}
+           
+        .container a {
+            color: #FFA07A;
+            text-decoration: none;
+        }
+        .container a:hover {
+            text-decoration: underline;
+        }
+        .extra-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .register-option {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+    .back-btn {
+    position: absolute;
+    top: 12px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #ff4500;
+    font-size: 22px;
+  }
+  
+  .back-btn:hover {
+    color: #FFA07A;
+  }
+  
+  .circle-arrow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    background-color: #ff4500;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 18px;
+    margin-right: 8px;
+  }
+  
+  .back-btn:hover .circle-arrow {
+    background-color: #FFA07A;
+  }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">
+            <span class="circle-arrow">&#x2190;</span> Back
+          </a>
+        <h1>Login</h1>
+        <form id="login-form" action="login.php" method="post">
+            <label for="role">Select Role:</label>
+            <select id="role" name="role" required>
+                <option value="customer">user</option>
+                <option value="admin">Admin</option>
+            </select>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <div class="extra-options">
+                <a href="forgot_password.html">Forgot Password?</a>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div class="register-option">
+            If you don't have an account, please <a href="register.html">Register here</a>.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("login-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            var role = document.getElementById("role").value;
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            // Dummy authentication logic
+            var isAuthenticated = false;
+
+            if (role === "admin" && username === "admin" && password === "admin123") {
+                isAuthenticated = true;
+            } else if (role === "customer" && password.length >= 6) {
+                isAuthenticated = true;
+            }
+
+            if (isAuthenticated) {
+                if (role === "admin") {
+                    window.location.href = "admin.html"; // Redirect to admin page
+                } else {
+                    window.location.href = "generate_qr.html"; // Redirect to home page
+                }
+            } else {
+                if (role === "admin") {
+                    alert("Invalid admin credentials. Please try again.");
+                } else {
+                    alert("Invalid customer credentials. Password should be up to 6 characters.");
+                }
+            }
+        });
+    </script>
+</body>
+</html>

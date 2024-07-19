@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        #qr-image {
+            max-width: 100%;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #qr-result {
+            font-size: 1.1em;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QR Code Scanner</h1>
+        <input type="file" accept="image/*" onchange="handleFileSelect(event)">
+        <img id="qr-image" src="#" alt="QR Code Image">
+        <p id="qr-result">Scanning...</p>
+        <a href="index.html" class="btn">Back to Home</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.0.0/dist/jsQR.js"></script>
+    <script>
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const qrImage = document.getElementById("qr-image");
+                    qrImage.src = event.target.result;
+
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        context.drawImage(img, 0, 0, img.width, img.height);
+
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+                        if (code) {
+                            const qrData = code.data;
+                            try {
+                                const parsedData = JSON.parse(qrData);
+                                const name = parsedData.name;
+                                const studentId = parsedData.studentId;
+                                const resultElement = document.getElementById("qr-result");
+                                resultElement.innerText = `Name: ${name}, Student ID: ${studentId}`;
+                                resultElement.classList.add('success');
+                                saveData(name, studentId);
+                            } catch (error) {
+                                document.getElementById("qr-result").innerText = "Invalid QR Code data.";
+                                document.getElementById("qr-result").classList.add('error');
+                            }
+                        } else {
+                            document.getElementById("qr-result").innerText = "No QR Code detected.";
+                        }
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveData(name, studentId) {
+            const time = new Date().toISOString();
+            const qrEntries = JSON.parse(localStorage.getItem('qrEntries')) || [];
+            qrEntries.push({ name, studentId, time });
+            localStorage.setItem('qrEntries', JSON.stringify(qrEntries));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .container h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        .data-table th {
+            background-color: #f4f4f4;
+        }
+        .btn-container {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            text-decoration: none;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="btn-container">
+            <button class="btn" id="download-btn">Download</button>
+            <button class="btn" id="logout-btn">Logout</button>
+        </div>
+        <h1>Scanned QR Data</h1>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Serial No.</th>
+                    <th>Name</th>
+                    <th>Student ID</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="data-table-body">
+                <!-- Data will be appended here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function loadScannedData() {
+            const dataTableBody = document.getElementById('data-table-body');
+            const qrEntries = JSON.parse(localStorage.getItem('qrEntries')) || [];
+            dataTableBody.innerHTML = ''; // Clear existing data
+
+            qrEntries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                const serialCell = document.createElement('td');
+                const nameCell = document.createElement('td');
+                const studentIdCell = document.createElement('td');
+                const timeCell = document.createElement('td');
+
+                serialCell.textContent = index + 1;
+                nameCell.textContent = entry.name;
+                studentIdCell.textContent = entry.studentId;
+                timeCell.textContent = new Date(entry.time).toLocaleString();
+
+                row.appendChild(serialCell);
+                row.appendChild(nameCell);
+                row.appendChild(studentIdCell);
+                row.appendChild(timeCell);
+                dataTableBody.appendChild(row);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadScannedData);
+
+        document.getElementById('download-btn').addEventListener('click', function() {
+            const csvData = generateCSV();
+            const blob = new Blob([csvData], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'scanned_data.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            alert('Logout functionality');
+        });
+
+        function generateCSV() {
+            const qrEntries = JSON.parse(localStorage.getItem('qrEntries')) || [];
+            let csvData = 'Serial No.,Name,Student ID,Time\n';
+            qrEntries.forEach((entry, index) => {
+                const serialNo = index + 1;
+                const name = entry.name;
+                const studentId = entry.studentId;
+                const time = new Date(entry.time).toLocaleString();
+                csvData += `${serialNo},${name},${studentId},${time}\n`;
+            });
+            return csvData;
+        }
+    </script>
+</body>
+</html>
